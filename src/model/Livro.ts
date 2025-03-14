@@ -17,6 +17,7 @@ export class Livro {
     private quantDisponivel: number; // Quantidade disponível daquele exemplar
     private valorAquisicao: number; // Valor da arquisição do livro
     private statusLivroEmprestado: string; // Status do livro emprestado
+    private statusLivro: boolean = true;
 
     /**
     * Construtor da classe Livro
@@ -216,6 +217,26 @@ export class Livro {
         this.statusLivroEmprestado = _statusLivroEmprestado;
     }
 
+    
+    /**
+     * 
+     * @returns Status do livro no sistema
+     */
+
+    public getStatusLivro(status_livro: any): boolean { 
+        return this.statusLivro;
+    }
+
+    /**
+     * Atrinui um valor ao status do livro
+     * 
+     * @param _statusLivro : Valor a ser atribuido ao status do livro
+     */
+
+    public setStatusLivro( _statusLivro: boolean){
+        this.statusLivro = _statusLivro;
+    }
+
     // MÉTODO PARA ACESSAR O BANCO DE DADOS
     // CRUD Create - READ - Update - Delete
 
@@ -252,6 +273,8 @@ export class Livro {
                 );
                 // adicionando o ID ao objeto
                 novoLivro.setIdLivro(livro.id_livro);
+                novoLivro.setStatusLivro(livro.status_livro);
+
 
                 // adicionando um livro na lista
                 listaDeLivros.push(novoLivro);
@@ -328,13 +351,14 @@ export class Livro {
 
         try {
             // Cria a consulta para rmeover empréstimo do banco de dados
-            const queryDeleteEmprestimoLivro = `DELETE FROM emprestimo WHERE id_livro=${id_livro}`;
-            // executa a query para remover empréstimo
+            const queryDeleteEmprestimoLivro = `DELETE FROM Emprestimo WHERE id_livro=${id_livro}`;
+            // executa a query para remover livro
             await database.query(queryDeleteEmprestimoLivro);
 
             // Construção da query SQL para deletar o Livro.
-            const queryDeleteLivro = `DELETE FROM Livro WHERE id_livro=${id_livro};`;
-
+            const queryDeleteLivro = `UPDATE Livro
+                                        SET status_livro = FALSE
+                                        WHERE id_livro=${id_livro};`;
             // Executa a query de exclusão e verifica se a operação foi bem-sucedida.
             await database.query(queryDeleteLivro)
                 .then((result) => {
@@ -378,6 +402,7 @@ export class Livro {
 
             // Executa a query de atualização e verifica se a operação foi bem-sucedida.
             await database.query(queryAtualizarLivro)
+
                 .then((result) => {
                     if (result.rowCount != 0) {
                         queryResult = true; // Se a operação foi bem-sucedida, define queryResult como true.

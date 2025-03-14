@@ -15,6 +15,7 @@ export class Aluno {
     private endereco: string; // Endereço do aluno
     private email: string; //E-mail do aluno
     private celular: string; // Celular do aluno
+    private statusAluno:boolean = true; // controla o status do aluno
 
     /**
      * Construtor da classe Aluno
@@ -165,6 +166,25 @@ export class Aluno {
         this.celular = _celular;
     }
 
+    /**
+     * 
+     * @returns Status do aluno no sistema
+     */
+
+    public getStatusAluno(): boolean { 
+        return this.statusAluno;
+    }
+
+    /**
+     * Atrinui um valor ao status do aluno
+     * 
+     * @param _statusAluno : Valor a ser atribuido ao status do aluno
+     */
+
+    public setStatusAluno( _statusAluno: boolean){
+        this.statusAluno = _statusAluno;
+    }
+
     // MÉTODO PARA ACESSAR O BANCO DE DADOS
     // CRUD Create - READ - Update - Delete
 
@@ -196,10 +216,12 @@ export class Aluno {
                     aluno.endereco,
                     aluno.email,
                     aluno.celular
+                    
                 );
                 // adicionando o ID ao objeto
                 novoAluno.setIdAluno(aluno.id_aluno);
                 novoAluno.setRA(aluno.ra);
+                novoAluno.setStatusAluno(aluno.status_aluno);
 
                 // adicionando a pessoa na lista
                 listaDeAlunos.push(novoAluno);
@@ -266,14 +288,15 @@ export class Aluno {
     
         try {
             // Cria a consulta (query) para remover o aluno
-            const queryDeleteEmprestimoAluno = `DELETE FROM emprestimo WHERE id_aluno=${id_aluno}`;
-
+            const queryDeleteEmprestimoAluno = `DELETE FROM emprestimo WHERE id_aluno=${id_aluno};
+                                                    SET status_aluno = FALSE;
+                                                    WHERE id_aluno=${id_aluno};`;
             // remove os emprestimos associado ao aluno
             await database.query(queryDeleteEmprestimoAluno);
 
             // Construção da query SQL para deletar o Aluno.
-            const queryDeleteAluno = `DELETE FROM Aluno WHERE id_aluno=${id_aluno};`;
-    
+            const queryDeleteAluno = `DELETE FROM Aluno WHERE id_aluno=${id_aluno};;
+                                        SET status_aluno = FALSE;`;
             // Executa a query de exclusão e verifica se a operação foi bem-sucedida.
             await database.query(queryDeleteAluno)
             .then((result) => {
