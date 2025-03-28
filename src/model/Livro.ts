@@ -251,7 +251,7 @@ export class Livro {
 
         try {
             // Query para consulta no banco de dados
-            const querySelectLivro = `SELECT * FROM Livro;`;
+            const querySelectLivro = `SELECT * FROM Livro WHERE status_livro = TRUE;`;
 
             // executa a query no banco de dados
             const respostaBD = await database.query(querySelectLivro);
